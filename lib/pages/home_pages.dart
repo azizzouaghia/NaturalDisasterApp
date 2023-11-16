@@ -25,7 +25,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BarWidget(),
+      appBar: const BarWidget(
+        title: "Dashboard Statistics",
+      ),
       drawer: const NavigationDrawerWidget(),
       body: Column(
         children: [

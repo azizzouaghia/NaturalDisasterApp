@@ -60,7 +60,7 @@ class NavigationDrawerWidget extends StatelessWidget
               leading: const Icon(Icons.search_outlined, color: AppColors.font),
               title: const Text("Search Earthquake"),
               onTap: () {
-                Navigator.of(context).pushReplacementNamed("/home");
+                Navigator.of(context).pushReplacementNamed("/search");
               },
             ),
             //air pollution tile

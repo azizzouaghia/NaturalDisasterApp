@@ -16,7 +16,9 @@ class _EarthquackDetailsState extends State<EarthquackDetails> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      appBar: BarWidget(),
+      appBar: BarWidget(
+        title: "Dashboard Statistics",
+      ),
       body: Column(
         children: [
           SizedBox(height: 20),

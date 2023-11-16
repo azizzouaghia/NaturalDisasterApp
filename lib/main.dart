@@ -1,6 +1,7 @@
 import 'package:first_app/pages/earthquack_details.dart';
 import 'package:first_app/pages/home_pages.dart';
 import 'package:first_app/pages/login_page.dart';
+import 'package:first_app/pages/search_earthquack.dart';
 import 'package:first_app/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginPage(),
           '/home': (context) => const HomePage(),
           '/details': (context) => const EarthquackDetails(),
+          '/search': (context) => const SearchEarthquack(),
         });
   }
 }
