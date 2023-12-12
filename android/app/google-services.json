@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "553640608587",
+    "project_id": "natural-app-a7994",
+    "storage_bucket": "natural-app-a7994.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553640608587:android:754078dfa22a23e3e35ece",
+        "android_client_info": {
+          "package_name": "com.example.first_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS80v027ybGCRtbrl5s3wnpIn9qcmLVq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

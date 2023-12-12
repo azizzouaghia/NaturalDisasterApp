@@ -1,31 +1,80 @@
+import 'dart:convert';
+
+import 'package:first_app/models/earthquake_model.dart';
+import 'package:first_app/pages/home_pages.dart';
 import 'package:first_app/styles/app_colors.dart';
 import 'package:first_app/widgets/bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
 
 class EarthquackDetails extends StatefulWidget {
-  const EarthquackDetails({Key? key}) : super(key: key);
+  final Earthquake earthquake;
+
+  const EarthquackDetails({Key? key, required this.earthquake})
+      : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _EarthquackDetailsState createState() => _EarthquackDetailsState();
 }
 
 class _EarthquackDetailsState extends State<EarthquackDetails> {
+  num? depth;
+  num? magnitude;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final url = widget.earthquake.details;
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+
+      // Ensure depth is of type double
+      depth = data['geometry']['coordinates'][2].toDouble();
+
+      // Extract magnitude directly without accessing 'properties' key
+      magnitude = data['properties']['mag'];
+
+      print(depth);
+      print(magnitude);
+
+      setState(() {
+        depth = data['geometry']['coordinates'][2].toDouble();
+        magnitude = data['properties']['mag'];
+      });
+    } else {
+      // Handle the error
+      print('Failed to load earthquake details: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: BarWidget(),
+    return Scaffold(
+      appBar: BarWidget(
+        title: "Dashboard Statistics",
+      ),
       body: Column(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
-            child: Text("More details",
-                style: TextStyle(fontSize: 17, color: AppColors.white)),
+            child: Text(
+              "More details",
+              style: TextStyle(fontSize: 17, color: AppColors.white),
+            ),
           ),
-          SizedBox(height: 5),
-          DetailsCard(),
+          const SizedBox(height: 5),
+          DetailsCard(
+            earthquake: widget.earthquake,
+            magnitude: magnitude,
+            depth: depth,
+          ),
         ],
       ),
     );
@@ -33,10 +82,25 @@ class _EarthquackDetailsState extends State<EarthquackDetails> {
 }
 
 class DetailsCard extends StatelessWidget {
-  const DetailsCard({Key? key}) : super(key: key);
+  final Earthquake earthquake;
+  final num? depth;
+  final num? magnitude;
+
+  const DetailsCard({
+    Key? key,
+    required this.earthquake,
+    required this.depth,
+    required this.magnitude,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Limit the location string to 24 characters if it's too long
+    String displayLocation = earthquake.place;
+    if (displayLocation.length > 24) {
+      displayLocation = displayLocation.substring(0, 27) + '...';
+    }
+
     return SizedBox(
       height: 400,
       width: MediaQuery.of(context).size.width - 40,
@@ -46,24 +110,34 @@ class DetailsCard extends StatelessWidget {
           color: AppColors.white,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              DetailsLine(title: "Location", value: "near the coast of Libya"),
-              SizedBox(height: 10),
-              DetailsLine(
-                  title: "Date and Time", value: "2023-04-02, 23:40:42"),
-              SizedBox(height: 10),
-              DetailsLine(title: "Depth", value: "10 km"),
-              SizedBox(height: 10),
-              DetailsLine(title: "Magnitude", value: "5.1"),
-              SizedBox(height: 10),
-              Text("Map :",
-                  style: TextStyle(fontSize: 13, color: AppColors.font)),
-              SizedBox(height: 10),
-              MapWidget(latitude: 36.084518, longitude: 9.370830),
-            ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            DetailsLine(title: "Location", value: displayLocation),
+            DetailsLine(
+              title: "Date",
+              value: earthquake.time.toLocal().toString(),
+            ),
+            const SizedBox(height: 10),
+            DetailsLine(title: "Depth", value: "${depth} km"),
+            const SizedBox(height: 10),
+            DetailsLine(
+              title: "Magnitude",
+              value: magnitude.toString(),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "Map :",
+              style: TextStyle(fontSize: 13, color: AppColors.font),
+            ),
+            const SizedBox(height: 10),
+            MapWidget(
+              latitude: earthquake.latitude,
+              longitude: earthquake.longitude,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -103,7 +177,7 @@ class MapWidget extends StatelessWidget {
           width: MediaQuery.of(context).size.width - 100,
           child: FlutterMap(
             options: MapOptions(
-                initialCenter: LatLng(latitude, longitude), initialZoom: 13),
+                initialCenter: LatLng(latitude, longitude), initialZoom: 8),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

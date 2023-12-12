@@ -1,5 +1,7 @@
 import 'package:first_app/styles/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:first_app/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class NavigationDrawerWidget extends StatelessWidget
     implements PreferredSizeWidget {
@@ -7,6 +9,9 @@ class NavigationDrawerWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    final appAuthProvider =
+        Provider.of<AppAuthProvider>(context, listen: false);
+
     return Drawer(
       width: 280,
       shape: const RoundedRectangleBorder(
@@ -19,7 +24,7 @@ class NavigationDrawerWidget extends StatelessWidget
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            buildHeader(context),
+            buildHeader(context, appAuthProvider),
             buildMenuItems(context),
           ],
         ),
@@ -27,21 +32,30 @@ class NavigationDrawerWidget extends StatelessWidget
     );
   }
 
-  Widget buildHeader(BuildContext context) => Container(
+  Widget buildHeader(BuildContext context, AppAuthProvider appAuthProvider) =>
+      Container(
         color: AppColors.font,
         padding: EdgeInsets.only(
             top: MediaQuery.of(context).padding.top + 12, bottom: 12),
-        child: const Column(children: [
-          CircleAvatar(
-            radius: 52,
-            backgroundImage: NetworkImage(
-                "https://media.shafaq.com/media/arcella/1697820719299.jpeg"),
-          ),
-          SizedBox(height: 10),
-          Text("Aziz Zouaghia", style: TextStyle(color: AppColors.white)),
-          Text("azizzouaghia@gmail.com",
-              style: TextStyle(color: AppColors.white)),
-        ]),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 52,
+              backgroundImage: NetworkImage(
+                  "https://media.shafaq.com/media/arcella/1697820719299.jpeg"),
+            ),
+            SizedBox(height: 10),
+            Text(
+              appAuthProvider.username, // Access user's username
+              style: TextStyle(color: AppColors.white),
+            ),
+            Text(
+              appAuthProvider.user?.email ??
+                  "", // Access user's email if needed
+              style: TextStyle(color: AppColors.white),
+            ),
+          ],
+        ),
       );
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(10),
@@ -60,7 +74,7 @@ class NavigationDrawerWidget extends StatelessWidget
               leading: const Icon(Icons.search_outlined, color: AppColors.font),
               title: const Text("Search Earthquake"),
               onTap: () {
-                Navigator.of(context).pushReplacementNamed("/home");
+                Navigator.of(context).pushReplacementNamed("/search");
               },
             ),
             //air pollution tile
