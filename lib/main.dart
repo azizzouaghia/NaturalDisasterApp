@@ -1,5 +1,4 @@
 import 'package:first_app/auth_provider.dart';
-import 'package:first_app/pages/earthquack_details.dart';
 import 'package:first_app/pages/search_earthquack.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/pages/forgot_password_page.dart';
